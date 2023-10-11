@@ -1,4 +1,4 @@
-﻿namespace Måstefunka_nu
+﻿namespace Stefans_ATM
 {
     internal class Program
     {

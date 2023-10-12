@@ -4,24 +4,26 @@
     {
 
 
-        static string[][] användaresKonton = new string[5][];
-        static decimal[][] användaresSaldon = new decimal[5][];
-        static string[] användare = { "stefan", "tobias", "anas", "johanna", "pär" };
-        static string[] pinkoder = { "1111", "2222", "3333", "4444", "5555" };
+                                           
+        static string[] användare = { "stefan", "tobias", "anas", "johanna", "pär" };                   //Användarna som har tillgång till bankomaten
+        static string[] pinkoder = { "1111", "2222", "3333", "4444", "5555" };                          //Deras lösenord i turordning
 
-        static void SkapaAnvändarnasKonton()
+
+        static string[][] användaresKonton = new string[5][];       
+        static decimal[][] användaresSaldon = new decimal[5][];
+        static void SkapaAnvändarnasKonton()                                                            // En funktion för att spara och lagra användarnas konton och saldon
         {
             användaresKonton[0] = new string[] { "Sparkonto", "Lönekonto", "Matkonto" };
             användaresSaldon[0] = new decimal[] { 10000.0m, 5000.0m, 2000.0m };
 
-            användaresKonton[1] = new string[] { "Bilkonto", "Mobilkonto" };
-            användaresSaldon[1] = new decimal[] { 1500.0m, 500.0m };
+            användaresKonton[1] = new string[] { "Bilkonto", "Mobilkonto", "Sparkonto" };
+            användaresSaldon[1] = new decimal[] { 1500.0m, 500.0m, 10000,0m };
 
             användaresKonton[2] = new string[] { "Båtkonto", "Sparkonto" };
             användaresSaldon[2] = new decimal[] { 2000.0m, 3000.0m };
 
-            användaresKonton[3] = new string[] { "Aktiekonto", "Fondkonto" };
-            användaresSaldon[3] = new decimal[] { 750.0m, 300.0m };
+            användaresKonton[3] = new string[] { "Aktiekonto", "Fondkonto", "Hästkonto", "Klädkonto" };
+            användaresSaldon[3] = new decimal[] { 750.0m, 300.0m, 5000,0m, 1000,0m };
 
             användaresKonton[4] = new string[] { "Matkonto", "Godiskonto" };
             användaresSaldon[4] = new decimal[] { 2500.0m, 1000.0m };
@@ -29,8 +31,6 @@
 
         static void Main(string[] args)
         {
-
-
             int felaktigaFörsök = 0;
             bool inloggningLyckades = false;
             string inloggadAnvändare = null;
@@ -63,7 +63,7 @@
         {
             Console.WriteLine("--------------------Välkommen till Stefans ATM----------------------");
             Console.WriteLine();
-            Console.WriteLine("Ange ditt användarnamn/användarnummer: ");
+            Console.WriteLine("Ange ditt användarnamn: ");
             string användaridentifierare = Console.ReadLine().ToLower();
 
             Console.WriteLine("Ange din PIN-kod: ");
@@ -122,6 +122,7 @@
                         Console.Clear();
                         break;
 
+
                     case "3":
                         Console.Clear();
                         TaUtPengar(inloggadAnvändare);
@@ -149,47 +150,81 @@
             }
         }
 
-        static void SeKontonOchSaldo(string inloggadAnvändare)
+
+
+        static void ÖverföringMellanKonton(string inloggadAnvändare)
         {
-            for (int i = 0; i < användare.Length; i++)
+            int användareIndex = Array.IndexOf(användare, inloggadAnvändare);
+
+            if (användareIndex == -1)
             {
-                if (inloggadAnvändare == användare[i])
+                Console.WriteLine("Användaren hittades inte.");
+                return;
+            }
+
+            Console.WriteLine("Dina befintliga konton:");
+            for (int i = 0; i < användaresKonton[användareIndex].Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {användaresKonton[användareIndex][i]}, Saldo: {användaresSaldon[användareIndex][i]:C}");
+            }
+
+            int frånKontoIndex = VäljIndex(användaresKonton[användareIndex].Length, "Välj ett konto att ta pengar från (ange numret):");
+            int tillKontoIndex = VäljIndex(användaresKonton[användareIndex].Length, "Välj ett konto att flytta pengarna till (ange numret):", frånKontoIndex);
+            decimal överförBelopp = VäljDecimal(0, användaresSaldon[användareIndex][frånKontoIndex], "Ange beloppet att flytta:");
+
+            användaresSaldon[användareIndex][frånKontoIndex] -= överförBelopp;
+            användaresSaldon[användareIndex][tillKontoIndex] += överförBelopp;
+
+            Console.WriteLine("Överföringen lyckades.");
+            Console.WriteLine($"Det nya saldot på {användaresKonton[användareIndex][frånKontoIndex]} är: {användaresSaldon[användareIndex][frånKontoIndex]:C}");
+            Console.WriteLine($"Det nya saldot på {användaresKonton[användareIndex][tillKontoIndex]} är: {användaresSaldon[användareIndex][tillKontoIndex]:C}");
+        }
+
+        static int VäljIndex(int max, string meddelande)
+        {
+            int valtIndex;
+            while (true)
+            {
+                Console.WriteLine(meddelande);
+                if (int.TryParse(Console.ReadLine(), out valtIndex) && valtIndex >= 1 && valtIndex <= max)
                 {
-                    if (användaresKonton[i] != null && användaresSaldon[i] != null)
-                    {
-                        Console.WriteLine($"Konton och saldo för användare: {inloggadAnvändare}");
-                        for (int j = 0; j < användaresKonton[i].Length; j++)
-                        {
-                            string konto = användaresKonton[i][j];
-                            decimal saldo = användaresSaldon[i][j];
-                            Console.WriteLine($"{konto}: {saldo:C}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Användaren har inga konton eller saldon.");
-                    }
-                    return;
+                    return valtIndex - 1;
                 }
+                Console.WriteLine("Ogiltigt val. Vänligen välj ett nummer som representerar ett konto.");
             }
         }
 
-        static void ÖverföringMellanKonton(string användare)
+        static int VäljIndex(int max, string meddelande, int exkluderadIndex)
         {
-            Console.WriteLine($"Överföring mellan konton för användare: {användare}");
+            int valtIndex;
+            while (true)
+            {
+                Console.WriteLine(meddelande);
+                if (int.TryParse(Console.ReadLine(), out valtIndex) && valtIndex >= 1 && valtIndex <= max && valtIndex - 1 != exkluderadIndex)
+                {
+                    return valtIndex - 1;
+                }
+                Console.WriteLine("Ogiltigt val. Vänligen välj ett nummer som representerar ett annat konto.");
+            }
+        }
+
+        static decimal VäljDecimal(decimal min, decimal max, string meddelande)
+        {
+            decimal belopp;
+            while (true)
+            {
+                Console.WriteLine(meddelande);
+                if (decimal.TryParse(Console.ReadLine(), out belopp) && belopp > min && belopp <= max)
+                {
+                    return belopp;
+                }
+                Console.WriteLine("Ogiltigt belopp. Vänligen ange ett belopp som är inom rätt intervall.");
+            }
         }
 
         static void TaUtPengar(string inloggadAnvändare)
         {
-            int användareIndex = -1;
-            for (int i = 0; i < användare.Length; i++)
-            {
-                if (inloggadAnvändare == användare[i])
-                {
-                    användareIndex = i;
-                    break;
-                }
-            }
+            int användareIndex = Array.IndexOf(användare, inloggadAnvändare);
 
             if (användareIndex == -1)
             {
@@ -198,39 +233,15 @@
             }
 
             Console.WriteLine("Välj ett konto att ta ut pengar från:");
-
             for (int i = 0; i < användaresKonton[användareIndex].Length; i++)
             {
                 Console.WriteLine($"{i + 1}. {användaresKonton[användareIndex][i]}");
             }
 
-            int valtKontoIndex = -1;
-            while (true)
-            {
-                if (int.TryParse(Console.ReadLine(), out valtKontoIndex) && valtKontoIndex >= 1 && valtKontoIndex <= användaresKonton[användareIndex].Length)
-                {
-                    valtKontoIndex--;
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Ogiltigt val. Vänligen välj ett nummer som representerar ett konto.");
-                }
-            }
+            int valtKontoIndex = VäljIndex(användaresKonton[användareIndex].Length);
 
             Console.WriteLine("Ange det belopp du vill ta ut:");
-            decimal uttagBelopp = 0;
-            while (true)
-            {
-                if (decimal.TryParse(Console.ReadLine(), out uttagBelopp) && uttagBelopp > 0 && uttagBelopp <= användaresSaldon[användareIndex][valtKontoIndex])
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Ogiltigt belopp. Vänligen ange ett belopp som är mindre än eller lika med ditt saldo.");
-                }
-            }
+            decimal uttagBelopp = VäljDecimal(0, användaresSaldon[användareIndex][valtKontoIndex]);
 
             Console.WriteLine("Ange din PIN-kod för att bekräfta:");
             string pinKod = Console.ReadLine();
@@ -244,6 +255,32 @@
             else
             {
                 Console.WriteLine("PIN-koden är felaktig. Transaktionen avbruten.");
+            }
+        }
+
+        static int VäljIndex(int max)
+        {
+            int valtIndex;
+            while (true)
+            {
+                if (int.TryParse(Console.ReadLine(), out valtIndex) && valtIndex >= 1 && valtIndex <= max)
+                {
+                    return valtIndex - 1;
+                }
+                Console.WriteLine("Ogiltigt val. Vänligen välj ett nummer som representerar ett konto.");
+            }
+        }
+
+        static decimal VäljDecimal(decimal min, decimal max)
+        {
+            decimal belopp;
+            while (true)
+            {
+                if (decimal.TryParse(Console.ReadLine(), out belopp) && belopp > 0 && belopp <= max)
+                {
+                    return belopp;
+                }
+                Console.WriteLine("Ogiltigt belopp. Vänligen ange ett belopp som är mindre än eller lika med ditt saldo.");
             }
         }
 

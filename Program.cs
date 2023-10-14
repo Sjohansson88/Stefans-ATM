@@ -31,26 +31,26 @@
 
         static void Main(string[] args)
         {
-            int felaktigaFörsök = 0;
+            int felaktigaFörsök = 0;                                                                    // Variabler för att hålla koll på antal felaktiga försök, inloggningens status och inloggad användare.
             bool inloggningLyckades = false;
             string inloggadAnvändare = null;
 
-            while (true)
+            while (true)                                                                               // En oändlig loop som körs tills användaren lyckas logga in eller överskrider max antal felaktiga försök.
             {
                 inloggningLyckades = LoggaIn(användare, pinkoder, out inloggadAnvändare);
 
-                if (inloggningLyckades)
+                if (inloggningLyckades)                                                                // Vid lyckad inloggning skrivs nedan kod ut
                 {
                     Console.WriteLine($"Inloggningen lyckades. Välkommen, {inloggadAnvändare}!");
                     Console.Clear();
 
-                    HanteraBankFunktioner(inloggadAnvändare);
+                    Meny(inloggadAnvändare);
                 }
-                else
-                {
+                else                                                                                   // Vid misslyckad inloggning
+                { 
                     Console.WriteLine("Inloggningen misslyckades. Vänligen försök igen.");
                     felaktigaFörsök++;
-                    if (felaktigaFörsök >= 3)
+                    if (felaktigaFörsök >= 3)                                                          // Om du ej lyckat logga in på 3 försök.
                     {
                         Console.WriteLine("Du har uppnått max antal felaktiga inloggningsförsök. Programmet avslutas.");
                         break; 
@@ -59,7 +59,7 @@
             }
         }
 
-        static bool LoggaIn(string[] användare, string[] pinkoder, out string inloggadAnvändare)
+        static bool LoggaIn(string[] användare, string[] pinkoder, out string inloggadAnvändare)           // En logga in funktion, som ber användaren skriva in användarnamn och pin-kod
         {
             Console.WriteLine("--------------------Välkommen till Stefans ATM----------------------");
             Console.WriteLine();
@@ -69,20 +69,20 @@
             Console.WriteLine("Ange din PIN-kod: ");
             string pinKod = Console.ReadLine();
 
-            for (int i = 0; i < användare.Length; i++)
+            for (int i = 0; i < användare.Length; i++)                                                  // Loopar igenom användar- och pinkod-arraysen för att hitta en matchning.
             {
-                if (användaridentifierare == användare[i] && pinKod == pinkoder[i])
+                if (användaridentifierare == användare[i] && pinKod == pinkoder[i])                     // Om användarnamn och pin-kod matchar, så blir det en lyckad inloggning, samt att vi har en inloggad användare
                 {
-                    inloggadAnvändare = användare[i];
+                    inloggadAnvändare = användare[i];                                                   
                     return true; 
                 }
             }
 
-            inloggadAnvändare = null;
+            inloggadAnvändare = null;                                                                   // Om ingen matchning hittades, återställ inloggadAnvändare och returnera false.
             return false; 
         }
 
-        static void HanteraBankFunktioner(string inloggadAnvändare)
+        static void Meny(string inloggadAnvändare)                                                      // Vid lyckad inloggning så skickas användaren hit till menyn.
         {
             bool loggadUt = false;
             while (true)
@@ -95,13 +95,14 @@
                 Console.WriteLine("3. Ta ut pengar");
                 Console.WriteLine("4. Logga ut");
 
-                string val = Console.ReadLine();
-                int användarIndex = Array.IndexOf(användare, inloggadAnvändare);
+                string val = Console.ReadLine();                                                        // Läser av användarens val från menyn
+                int användarIndex = Array.IndexOf(användare, inloggadAnvändare);                        // Hitta index för inloggad användare i användare-arrayen.
+
                 switch (val)
                 {
                     case "1":
                         Console.Clear();
-                        SkapaAnvändarnasKonton();
+                        SkapaAnvändarnasKonton();                                                       // Hämtar inloggade användarens konton och saldon
                         if (användarIndex != -1)
                         {
                             for (int i = 0; i < användaresKonton[användarIndex].Length; i++)
@@ -116,7 +117,7 @@
 
                     case "2":
                         Console.Clear();
-                        ÖverföringMellanKonton(inloggadAnvändare);
+                        ÖverföringMellanKonton(inloggadAnvändare);                                         // Utför överföring mellan konton´för inloggad användare
                         Console.WriteLine("Tryck Enter för att återgå till menyn...");
                         Console.ReadLine();
                         Console.Clear();
@@ -125,7 +126,7 @@
 
                     case "3":
                         Console.Clear();
-                        TaUtPengar(inloggadAnvändare);
+                        TaUtPengar(inloggadAnvändare);                                                      // Utför uttag av pengar från kontot för inloggad användare
                         Console.WriteLine("Tryck Enter för att återgå till menyn...");
                         Console.ReadLine();
                         Console.Clear();
@@ -136,9 +137,9 @@
                         Console.WriteLine("Du har loggat ut.");
                         Console.WriteLine("Tryck Enter för att återgå till menyn...");
                         Console.ReadLine();
-                        loggadUt = true;
+                        loggadUt = true;                                                                    // Loggar ut användaren
                         Console.Clear();
-                        return;
+                        return;                                                                             // Avslutar loopen och därmed menyn.
 
                     default:
                         Console.WriteLine("Ogiltigt val. Vänligen försök igen.");
@@ -152,7 +153,7 @@
 
 
 
-        static void ÖverföringMellanKonton(string inloggadAnvändare)
+        static void ÖverföringMellanKonton(string inloggadAnvändare)                        
         {
             int användareIndex = Array.IndexOf(användare, inloggadAnvändare);
 
@@ -273,6 +274,7 @@
 
         static decimal VäljDecimal(decimal min, decimal max)
         {
+
             decimal belopp;
             while (true)
             {

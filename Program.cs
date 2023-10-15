@@ -153,30 +153,30 @@
 
 
 
-        static void ÖverföringMellanKonton(string inloggadAnvändare)                        
+        static void ÖverföringMellanKonton(string inloggadAnvändare)                                     
         {
-            int användareIndex = Array.IndexOf(användare, inloggadAnvändare);
+            int användareIndex = Array.IndexOf(användare, inloggadAnvändare);                       //Hittar ett index för den inloggade användaren i användar-arrayn
 
-            if (användareIndex == -1)
+            if (användareIndex == -1)                                                               // Om användaren inte finns, skrivs nedan meddelande ut. Och avslutar metoden 
             {
                 Console.WriteLine("Användaren hittades inte.");
                 return;
             }
 
-            Console.WriteLine("Dina befintliga konton:");
+            Console.WriteLine("Dina befintliga konton:");                                           // Skriver ut den inloggade användarens konton. 
             for (int i = 0; i < användaresKonton[användareIndex].Length; i++)
             {
                 Console.WriteLine($"{i + 1}. {användaresKonton[användareIndex][i]}, Saldo: {användaresSaldon[användareIndex][i]:C}");
             }
 
-            int frånKontoIndex = VäljIndex(användaresKonton[användareIndex].Length, "Välj ett konto att ta pengar från (ange numret):");
-            int tillKontoIndex = VäljIndex(användaresKonton[användareIndex].Length, "Välj ett konto att flytta pengarna till (ange numret):", frånKontoIndex);
-            decimal överförBelopp = VäljDecimal(0, användaresSaldon[användareIndex][frånKontoIndex], "Ange beloppet att flytta:");
+            int frånKontoIndex = VäljIndex(användaresKonton[användareIndex].Length, "Välj ett konto att ta pengar från (ange numret):");                // Väljer vilket konto som användaren skall flytta pengar ifrån
+            int tillKontoIndex = VäljIndex(användaresKonton[användareIndex].Length, "Välj ett konto att flytta pengarna till (ange numret):", frånKontoIndex);   // Väljer vilket konto som användaren skall flytta pengar till
+            decimal överförBelopp = VäljDecimal(0, användaresSaldon[användareIndex][frånKontoIndex], "Ange beloppet att flytta:");          // Beloppet som skall flyttas
 
-            användaresSaldon[användareIndex][frånKontoIndex] -= överförBelopp;
+            användaresSaldon[användareIndex][frånKontoIndex] -= överförBelopp;                  // Dessa två rader uppdaterar saldot för bägge kontona efter överföringen
             användaresSaldon[användareIndex][tillKontoIndex] += överförBelopp;
 
-            Console.WriteLine("Överföringen lyckades.");
+            Console.WriteLine("Överföringen lyckades.");                            // Skriver ut att överföringen lyckades och de nya saldona på de bägge konton
             Console.WriteLine($"Det nya saldot på {användaresKonton[användareIndex][frånKontoIndex]} är: {användaresSaldon[användareIndex][frånKontoIndex]:C}");
             Console.WriteLine($"Det nya saldot på {användaresKonton[användareIndex][tillKontoIndex]} är: {användaresSaldon[användareIndex][tillKontoIndex]:C}");
         }
@@ -186,10 +186,10 @@
             int valtIndex;
             while (true)
             {
-                Console.WriteLine(meddelande);
-                if (int.TryParse(Console.ReadLine(), out valtIndex) && valtIndex >= 1 && valtIndex <= max)
+                Console.WriteLine(meddelande);                                                               // Skriv ut meddelandet som användaren ska se för att välja ett konto.
+                if (int.TryParse(Console.ReadLine(), out valtIndex) && valtIndex >= 1 && valtIndex <= max)       // Försök att läsa användarens inmatning som en heltalsvariabel.
                 {
-                    return valtIndex - 1;
+                    return valtIndex - 1;                                                                       // Vid tillåtet val, så retuneras det valda indexet
                 }
                 Console.WriteLine("Ogiltigt val. Vänligen välj ett nummer som representerar ett konto.");
             }
@@ -225,41 +225,41 @@
 
         static void TaUtPengar(string inloggadAnvändare)
         {
-            int användareIndex = Array.IndexOf(användare, inloggadAnvändare);
+            int användareIndex = Array.IndexOf(användare, inloggadAnvändare);                       // Hittar index för inloggad användare
 
-            if (användareIndex == -1)
+            if (användareIndex == -1)                                                               // Om användare ej hittas skrivs nedan ut
             {
                 Console.WriteLine("Användaren hittades inte.");
                 return;
             }
 
-            Console.WriteLine("Välj ett konto att ta ut pengar från:");
+            Console.WriteLine("Välj ett konto att ta ut pengar från:");                             // Skriv ut tillgängliga konton för den inloggade användaren.
             for (int i = 0; i < användaresKonton[användareIndex].Length; i++)
             {
                 Console.WriteLine($"{i + 1}. {användaresKonton[användareIndex][i]}");
             }
 
-            int valtKontoIndex = VäljIndex(användaresKonton[användareIndex].Length);
+            int valtKontoIndex = VäljIndex(användaresKonton[användareIndex].Length);                // Variabel av det valda konton för att ta ut pengarna 
 
-            Console.WriteLine("Ange det belopp du vill ta ut:");
-            decimal uttagBelopp = VäljDecimal(0, användaresSaldon[användareIndex][valtKontoIndex]);
+            Console.WriteLine("Ange det belopp du vill ta ut:");                
+            decimal uttagBelopp = VäljDecimal(0, användaresSaldon[användareIndex][valtKontoIndex]); //Beloppet som skall tas ut
 
             Console.WriteLine("Ange din PIN-kod för att bekräfta:");
             string pinKod = Console.ReadLine();
 
-            if (pinKod == pinkoder[användareIndex])
+            if (pinKod == pinkoder[användareIndex])                                                 // Vad som händer om pinkoden är korrekt. 
             {
                 användaresSaldon[användareIndex][valtKontoIndex] -= uttagBelopp;
                 Console.WriteLine("Pengar har tagits ut.");
                 Console.WriteLine($"Det nya saldot på {användaresKonton[användareIndex][valtKontoIndex]} är: {användaresSaldon[användareIndex][valtKontoIndex]:C}");
             }
-            else
+            else                                                                                    // Om pinkoden är felaktig
             {
                 Console.WriteLine("PIN-koden är felaktig. Transaktionen avbruten.");
             }
         }
 
-        static int VäljIndex(int max)
+        static int VäljIndex(int max)                                                               // Hämtar info om användares val av konto och vad som sker om det är ett felaktigt val
         {
             int valtIndex;
             while (true)
@@ -272,7 +272,7 @@
             }
         }
 
-        static decimal VäljDecimal(decimal min, decimal max)
+        static decimal VäljDecimal(decimal min, decimal max)                                    // Hämtar info om beloppet som användaren har angett, så att det är korrekt 
         {
 
             decimal belopp;
